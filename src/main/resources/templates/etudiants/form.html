@@ -1,117 +1,225 @@
-<div th:fragment="student-form">
-    <!DOCTYPE html>
-    <html lang="fr" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title th:text="${action} + ' un étudiant'">Formulaire Étudiant</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    </head>
-    <body class="bg-light">
-    <div th:replace="fragments/header :: header"></div>
-
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
-                        <h3 class="mb-0">
-                            <i class="bi bi-person-plus-fill me-2" th:if="${action == 'Ajouter'}"></i>
-                            <i class="bi bi-pencil-fill me-2" th:if="${action == 'Modifier'}"></i>
-                            <span th:text="${action} + ' un étudiant'"></span>
-                        </h3>
-                    </div>
-                    <div class="card-body p-4">
-                        <form th:action="${action == 'Ajouter'} ? @{/etudiants/nouveau} : @{/etudiants/modifier/{id}(id=${etudiant.id})}"
-                              method="post" th:object="${etudiant}" novalidate>
-
-                            <div class="mb-3">
-                                <label for="nom" class="form-label">
-                                    <i class="bi bi-person me-1"></i>Nom *
-                                </label>
-                                <input type="text"
-                                       class="form-control"
-                                       th:class="${#fields.hasErrors('nom')} ? 'form-control is-invalid' : 'form-control'"
-                                       id="nom"
-                                       th:field="*{nom}"
-                                       placeholder="Entrez le nom">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}">
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="prenom" class="form-label">
-                                    <i class="bi bi-person me-1"></i>Prénom *
-                                </label>
-                                <input type="text"
-                                       class="form-control"
-                                       th:class="${#fields.hasErrors('prenom')} ? 'form-control is-invalid' : 'form-control'"
-                                       id="prenom"
-                                       th:field="*{prenom}"
-                                       placeholder="Entrez le prénom">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}">
-                                </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="email" class="form-label">
-                                    <i class="bi bi-envelope me-1"></i>Email *
-                                </label>
-                                <input type="email"
-                                       class="form-control"
-                                       th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
-                                       id="email"
-                                       th:field="*{email}"
-                                       placeholder="exemple@email.com">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
-                                </div>
-                            </div>
-
-
-
-                            <!-- Action Buttons -->
-                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <a th:href="@{/etudiants}" class="btn btn-secondary me-md-2">
-                                    <i class="bi bi-arrow-left me-1"></i>Annuler
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-check-circle me-1" th:if="${action == 'Ajouter'}"></i>
-                                    <i class="bi bi-pencil-square me-1" th:if="${action == 'Modifier'}"></i>
-                                    <span th:text="${action}"></span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${action} + ' un étudiant'">Formulaire Étudiant</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .btn-custom {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            color: white;
+        }
+        .btn-secondary-custom {
+            background: #95a5a6;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary-custom:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+            color: white;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+        .invalid-feedback {
+            display: block;
+        }
+        .email-status {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        .email-available {
+            color: #28a745;
+        }
+        .email-taken {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="/home">
+            <i class="fas fa-graduation-cap me-2"></i>
+            Gestion Étudiants
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/home">
+                <i class="fas fa-home me-1"></i>
+                Accueil
+            </a>
+            <a class="nav-link" href="/etudiants">
+                <i class="fas fa-users me-1"></i>
+                Étudiants
+            </a>
+            <a class="nav-link" href="/logout">
+                <i class="fas fa-sign-out-alt me-1"></i>
+                Déconnexion
+            </a>
         </div>
     </div>
+</nav>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h2>
+                <i class="fas fa-user-plus me-2" th:if="${action == 'Ajouter'}"></i>
+                <i class="fas fa-user-edit me-2" th:if="${action == 'Modifier'}"></i>
+                <span th:text="${action}">Action</span> un étudiant
+            </h2>
+        </div>
 
-    <!-- Form Validation Script -->
-    <script>
-        // Client-side form validation
-        (function() {
-            'use strict';
-            window.addEventListener('load', function() {
-                var forms = document.getElementsByTagName('form');
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-            }, false);
-        })();
+        <form th:action="${action == 'Ajouter' ? '/etudiants/nouveau' : '/etudiants/modifier/' + etudiant.id}"
+              th:object="${etudiant}"
+              method="post"
+              novalidate>
 
+            <div class="form-group">
+                <label for="nom" class="form-label">
+                    <i class="fas fa-user me-1"></i>
+                    Nom <span class="text-danger">*</span>
+                </label>
+                <input type="text"
+                       class="form-control"
+                       th:class="${#fields.hasErrors('nom')} ? 'form-control is-invalid' : 'form-control'"
+                       id="nom"
+                       th:field="*{nom}"
+                       placeholder="Entrez le nom de l'étudiant">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></div>
+            </div>
 
-    </script>
-    </body>
-    </html>
+            <div class="form-group">
+                <label for="prenom" class="form-label">
+                    <i class="fas fa-user me-1"></i>
+                    Prénom <span class="text-danger">*</span>
+                </label>
+                <input type="text"
+                       class="form-control"
+                       th:class="${#fields.hasErrors('prenom')} ? 'form-control is-invalid' : 'form-control'"
+                       id="prenom"
+                       th:field="*{prenom}"
+                       placeholder="Entrez le prénom de l'étudiant">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">
+                    <i class="fas fa-envelope me-1"></i>
+                    Email <span class="text-danger">*</span>
+                </label>
+                <input type="email"
+                       class="form-control"
+                       th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
+                       id="email"
+                       th:field="*{email}"
+                       placeholder="exemple@email.com">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                <div id="email-status" class="email-status"></div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="/etudiants" class="btn btn-secondary-custom">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Retour
+                </a>
+                <button type="submit" class="btn btn-custom">
+                    <i class="fas fa-save me-1"></i>
+                    <span th:text="${action}">Enregistrer</span>
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Validation en temps réel de l'email
+    document.getElementById('email').addEventListener('blur', function() {
+        const email = this.value;
+        const statusDiv = document.getElementById('email-status');
+        const etudiantId = /*[[${etudiant.id}]]*/ null;
+
+        if (email && email.includes('@')) {
+            const url = `/etudiants/check-email?email=${encodeURIComponent(email)}${etudiantId ? '&excludeId=' + etudiantId : ''}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(available => {
+                    if (available) {
+                        statusDiv.innerHTML = '<i class="fas fa-check-circle me-1"></i>Email disponible';
+                        statusDiv.className = 'email-status email-available';
+                    } else {
+                        statusDiv.innerHTML = '<i class="fas fa-times-circle me-1"></i>Email déjà utilisé';
+                        statusDiv.className = 'email-status email-taken';
+                    }
+                })
+                .catch(() => {
+                    statusDiv.innerHTML = '';
+                });
+        } else {
+            statusDiv.innerHTML = '';
+        }
+    });
+
+    // Animation des champs avec erreurs
+    document.addEventListener('DOMContentLoaded', function() {
+        const invalidInputs = document.querySelectorAll('.is-invalid');
+        invalidInputs.forEach(input => {
+            input.style.animation = 'shake 0.5s ease-in-out';
+        });
+    });
+</script>
+
+<style>
+    @keyframes shake {
+        0%, 20%, 40%, 60%, 80% {
+            transform: translateX(0);
+        }
+        10%, 30%, 50%, 70%, 90% {
+            transform: translateX(-5px);
+        }
+    }
+</style>
+</body>
+</html>
