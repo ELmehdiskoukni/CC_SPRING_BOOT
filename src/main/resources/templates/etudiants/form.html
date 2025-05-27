@@ -1,10 +1,117 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div th:fragment="student-form">
+    <!DOCTYPE html>
+    <html lang="fr" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title th:text="${action} + ' un étudiant'">Formulaire Étudiant</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
+    <div th:replace="fragments/header :: header"></div>
 
-</body>
-</html>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">
+                            <i class="bi bi-person-plus-fill me-2" th:if="${action == 'Ajouter'}"></i>
+                            <i class="bi bi-pencil-fill me-2" th:if="${action == 'Modifier'}"></i>
+                            <span th:text="${action} + ' un étudiant'"></span>
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="${action == 'Ajouter'} ? @{/etudiants/nouveau} : @{/etudiants/modifier/{id}(id=${etudiant.id})}"
+                              method="post" th:object="${etudiant}" novalidate>
+
+                            <div class="mb-3">
+                                <label for="nom" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Nom *
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('nom')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="nom"
+                                       th:field="*{nom}"
+                                       placeholder="Entrez le nom">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="prenom" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Prénom *
+                                </label>
+                                <input type="text"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('prenom')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="prenom"
+                                       th:field="*{prenom}"
+                                       placeholder="Entrez le prénom">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('prenom')}" th:errors="*{prenom}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="bi bi-envelope me-1"></i>Email *
+                                </label>
+                                <input type="email"
+                                       class="form-control"
+                                       th:class="${#fields.hasErrors('email')} ? 'form-control is-invalid' : 'form-control'"
+                                       id="email"
+                                       th:field="*{email}"
+                                       placeholder="exemple@email.com">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                </div>
+                            </div>
+
+
+
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a th:href="@{/etudiants}" class="btn btn-secondary me-md-2">
+                                    <i class="bi bi-arrow-left me-1"></i>Annuler
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle me-1" th:if="${action == 'Ajouter'}"></i>
+                                    <i class="bi bi-pencil-square me-1" th:if="${action == 'Modifier'}"></i>
+                                    <span th:text="${action}"></span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Form Validation Script -->
+    <script>
+        // Client-side form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByTagName('form');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+
+
+    </script>
+    </body>
+    </html>
+</div>
