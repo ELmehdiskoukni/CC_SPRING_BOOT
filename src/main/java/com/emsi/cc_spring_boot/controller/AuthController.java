@@ -27,6 +27,13 @@ public class AuthController {
         }
         return "auth/login";
     }
+    @PostMapping("/login")
+    public String processLogin(@RequestParam String username,
+                               @RequestParam String password,
+                               RedirectAttributes redirectAttributes) {
+        // Add your login processing logic here
+        return "redirect:/home";
+    }
 
     @GetMapping("/register")
     public String showRegisterForm() {
