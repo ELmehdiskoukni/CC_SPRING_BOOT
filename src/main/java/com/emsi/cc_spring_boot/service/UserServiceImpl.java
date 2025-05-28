@@ -3,7 +3,6 @@ package com.emsi.cc_spring_boot.service;
 import com.emsi.cc_spring_boot.entity.User;
 import com.emsi.cc_spring_boot.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -16,15 +15,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Override
     public User authenticate(String username, String password) {
         Optional<User> userOpt = userRepository.findByUsername(username);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            if (passwordEncoder.matches(password, user.getPassword())) {
+            if (password.equals(user.getPassword())) {
                 return user;
             }
         }
@@ -40,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
             User user = new User();
             user.setUsername(username);
-            user.setPassword(passwordEncoder.encode(password));
+            user.setPassword(password);
             userRepository.save(user);
             return true;
         } catch (Exception e) {
